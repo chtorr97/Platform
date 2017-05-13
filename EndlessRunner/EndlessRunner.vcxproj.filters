@@ -13,10 +13,60 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="MyECS">
+      <UniqueIdentifier>{3f248426-a81f-410b-a945-791ab15f0b72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyECS\ComponentsManager.cpp">
+      <Filter>MyECS</Filter>
+    </ClCompile>
+    <ClCompile Include="MyECS\Entity.cpp">
+      <Filter>MyECS</Filter>
+    </ClCompile>
+    <ClCompile Include="MyECS\EntityManager.cpp">
+      <Filter>MyECS</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyECS\Components.h">
+      <Filter>MyECS</Filter>
+    </ClInclude>
+    <ClInclude Include="MyECS\ComponentsManager.h">
+      <Filter>MyECS</Filter>
+    </ClInclude>
+    <ClInclude Include="MyECS\Entity.h">
+      <Filter>MyECS</Filter>
+    </ClInclude>
+    <ClInclude Include="MyECS\EntityManager.h">
+      <Filter>MyECS</Filter>
+    </ClInclude>
+    <ClInclude Include="MyECS\Systems.h">
+      <Filter>MyECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
