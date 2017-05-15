@@ -24,17 +24,16 @@
     <ClCompile Include="MyECS\ComponentsManager.cpp" />
     <ClCompile Include="MyECS\Entity.cpp" />
     <ClCompile Include="MyECS\EntityManager.cpp" />
-    <ClCompile Include="Obstacles.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asset.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="MyECS\Components.h" />
     <ClInclude Include="MyECS\ComponentsManager.h" />
     <ClInclude Include="MyECS\Entity.h" />
     <ClInclude Include="MyECS\EntityManager.h" />
     <ClInclude Include="MyECS\Systems.h" />
-    <ClInclude Include="Obstacles.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>

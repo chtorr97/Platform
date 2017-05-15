@@ -36,9 +36,6 @@
     <ClCompile Include="MyECS\EntityManager.cpp">
       <Filter>MyECS</Filter>
     </ClCompile>
-    <ClCompile Include="Obstacles.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -65,8 +62,8 @@
     <ClInclude Include="MyECS\Systems.h">
       <Filter>MyECS</Filter>
     </ClInclude>
-    <ClInclude Include="Obstacles.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Asset.h">
+      <Filter>MyECS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

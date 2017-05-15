@@ -11,7 +11,7 @@
 using namespace std;
 using namespace sf;
 
-//class Entity;
+class Entity;
 
 namespace comp
 {
@@ -24,6 +24,7 @@ namespace comp
 		GRAPHIC,
 		ANIMATION,
 		COLLIDER,
+		PLAYER,
 		NUMBER_OF_COMPONENTS
 	};
 
@@ -44,9 +45,10 @@ namespace comp
 		float heading;
 		Vector2f origin;
 
-		bool hasChanged;
+		//bool hasChanged;
 
 		void move(Vector2f transition) { position += transition; }
+		void move(float x, float y) { move({ x, y }); }
 		void rotate(float rotation) { heading += rotation; }
 	};
 
@@ -54,14 +56,16 @@ namespace comp
 	{
 	public:
 		static const comps TYPE = PHYSIC;
-		physic(Vector2f _force = { 0, 0 }, float _maxSpeed = 1, float _mass = 1)
-			: force(_force), maxSpeed(_maxSpeed), mass(_mass) {}
+		physic(Vector2f _force = { 0, 0 }, float _maxSpeed = 1, float _mass = 1, bool _isKinematic = false)
+			: force(_force), maxSpeed(_maxSpeed), mass(_mass), isKinematic(_isKinematic) {}
 
 		Vector2f force;
 		float maxSpeed;
 		float mass;
+		bool isKinematic;
 
 		void applyForce(Vector2f _force) { force += _force; }
+		void applyForce(float x, float y) { applyForce({ x, y }); }
 		void reset() { force = { 0,0 }; }
 	};
 
@@ -199,7 +203,29 @@ namespace comp
 	{
 	public:
 		static const comps TYPE = COLLIDER;
-		FloatRect bounding;
+		FloatRect body; // top - left as center and width and height as half-size
+
+		void setSize(Vector2f size)
+		{
+			body.width = size.x;
+			body.height = size.y;
+		}
+		void setSize(float x, float y) { setSize({ x, y }); }
+
+		void setPosition(Vector2f pos)
+		{
+			body.left = pos.x;
+			body.top = pos.y;
+		}
+		void setPosition(float x, float y) { setPosition({ x, y }); }
+	};
+
+	class player : public component
+	{
+	public:
+		static const comps TYPE = PLAYER;
+		bool canJump;
+		int points;
 	};
 
 	using compVar = boost::variant<
@@ -207,7 +233,8 @@ namespace comp
 		physic,
 		graphic,
 		animation,
-		collider
+		collider,
+		player
 	>;
 
 	static std::bitset<comps::NUMBER_OF_COMPONENTS> maskOf(comps type)

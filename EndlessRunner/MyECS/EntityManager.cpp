@@ -2,6 +2,7 @@
 
 EntityManager::EntityManager()
 {
+	createEntity();
 }
 
 EntityManager::~EntityManager()
