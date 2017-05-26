@@ -33,6 +33,11 @@ void EntityManager::deleteEntity(int ID)
 	}
 }
 
+void EntityManager::deleteEntity(iterator it)
+{
+	deleteEntity(it - entities.begin());
+}
+
 Entity& EntityManager::get(int ID)
 {
 	if (ID < entities.size())

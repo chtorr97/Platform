@@ -39,34 +39,39 @@ namespace comp
 	public:
 		static const comps TYPE = TRANSFORM;
 		transform(Vector2f _position = { 0, 0 }, float _heading = 0, Vector2f _origin = { 0, 0 })
-			: position(_position), heading(_heading), origin(_origin) {}
+			: position(_position), prevPosition(_position), heading(_heading), origin(_origin) {}
 
+		Vector2f prevPosition;
 		Vector2f position;
 		float heading;
 		Vector2f origin;
 
 		//bool hasChanged;
 
-		void move(Vector2f transition) { position += transition; }
+		void move(Vector2f transition) { prevPosition = position; position += transition; }
 		void move(float x, float y) { move({ x, y }); }
-		void rotate(float rotation) { heading += rotation; }
+		void rotate(float rotation) { prevPosition = position; heading += rotation; }
+
+		Vector2f getDeltaPos() { return position - prevPosition; }
 	};
 
 	class physic : public component
 	{
 	public:
 		static const comps TYPE = PHYSIC;
-		physic(Vector2f _force = { 0, 0 }, float _maxSpeed = 1, float _mass = 1, bool _isKinematic = false)
-			: force(_force), maxSpeed(_maxSpeed), mass(_mass), isKinematic(_isKinematic) {}
+		physic(float _maxSpeed = 1, float _mass = 1, bool _isKinematic = false)
+			: acceleration({0, 0}), maxSpeed(_maxSpeed), mass(_mass), isKinematic(_isKinematic) {}
 
-		Vector2f force;
+		Vector2f acceleration;
+		Vector2f velocity;
 		float maxSpeed;
 		float mass;
 		bool isKinematic;
 
-		void applyForce(Vector2f _force) { force += _force; }
+		void applyForce(Vector2f _force) { acceleration += _force / mass; }
 		void applyForce(float x, float y) { applyForce({ x, y }); }
-		void reset() { force = { 0,0 }; }
+		void update() { velocity += acceleration; }
+		void reset() { velocity -= velocity * 0.2f; acceleration *= 0.0f; }
 	};
 
 	class graphic : public component
@@ -203,7 +208,6 @@ namespace comp
 	{
 	public:
 		static const comps TYPE = COLLIDER;
-		FloatRect body; // top - left as center and width and height as half-size
 
 		void setSize(Vector2f size)
 		{
@@ -212,19 +216,41 @@ namespace comp
 		}
 		void setSize(float x, float y) { setSize({ x, y }); }
 
+		Vector2f getSize() { return Vector2f(body.width, body.height); }
+		Vector2f getHalfSize() { return Vector2f(body.width / 2, body.height / 2); }
+
+		//center position
 		void setPosition(Vector2f pos)
 		{
 			body.left = pos.x;
 			body.top = pos.y;
 		}
 		void setPosition(float x, float y) { setPosition({ x, y }); }
+
+		Vector2f getPosition() { return Vector2f(body.left, body.top); }
+
+		enum class Shape
+		{
+			RECTANGLE,
+			CIRCLE
+		};
+
+		Shape shape;
+
+	private:
+		FloatRect body;
 	};
 
 	class player : public component
 	{
 	public:
 		static const comps TYPE = PLAYER;
+		player(int _points = 0)
+			: canJump(true), touchGround(false), isAlive(true), points(_points) {}
+
 		bool canJump;
+		bool isAlive;
+		bool touchGround;
 		int points;
 	};
 

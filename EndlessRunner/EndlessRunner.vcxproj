@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="Asset.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="MyECS\Components.h" />
     <ClInclude Include="MyECS\ComponentsManager.h" />
     <ClInclude Include="MyECS\Entity.h" />

@@ -25,6 +25,9 @@ public:
 	void activate() { mask |= comp::maskOf(comp::IS_ACTIVE); };
 	void deactivate() { mask = mask & ~comp::maskOf(comp::IS_ACTIVE); };
 
+	void setTag(string newTag) { tag = newTag; }
+	string getTag() { return tag; }
+
 	template<class T>
 	bool has()
 	{
@@ -84,6 +87,7 @@ private:
 	bitset<comps::NUMBER_OF_COMPONENTS> mask;
 	unordered_map<int, int> componentIndex;
 	ComponentsManager* CM;
+	string tag;
 };
 
 #endif

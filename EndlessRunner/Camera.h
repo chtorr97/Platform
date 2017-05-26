@@ -8,11 +8,11 @@ using namespace sf;
 class Camera
 {
 public:
-	Camera(RenderWindow& _window, View& _view, Vector2f& _focus);
+	Camera(RenderWindow& _window, View& _view);
 
 	void init();
 
-	void update();
+	void update(Vector2f& focus);
 	void drawCursor();
 
 	const inline Vector2f& getPosition() { return cursorPos; }
@@ -24,7 +24,6 @@ private:
 	Vector2f cursorPos;
 	View& view;
 	RenderWindow& window;
-	Vector2f& focus;
 
 	Vector2f pos,
 		ppos,

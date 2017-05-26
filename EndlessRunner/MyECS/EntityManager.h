@@ -6,7 +6,7 @@
 
 class EntityManager
 {
-	using entities_t = std::vector<Entity>;
+	using entities_t = vector<Entity>;
 public:
 	using iterator = entities_t::iterator;
 	using const_iterator = entities_t::const_iterator;
@@ -17,6 +17,7 @@ public:
 	int createEntity();
 
 	void deleteEntity(int ID);
+	void deleteEntity(iterator it);
 
 	Entity& get(int ID);
 

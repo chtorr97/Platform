@@ -7,10 +7,19 @@ using namespace std;
 using namespace sf;
 
 int myPlayer = -1;
+int death = -1;
+
+const Vector2f platformSize = { 100, 32 };
+const float platformTop = 0;
+const float platformMid = 100;
+const float platformDown = 200;
+
 
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(1200, 600), "SFML works!");
+
+	srand(time(NULL));
 
 	View v;
 
@@ -22,7 +31,8 @@ int main()
 	TextureManager TM;
 	TM.add("player", "Pics\\player.png");
 	TM.add("stone", "Pics\\stone.png");
-	TM.add("crate", "Pics\\crate.png");
+	TM.add("fire", "Pics\\fire.png");
+	TM.add("coin", "Pics\\coin.png");
 
 	TM.get("stone").setRepeated(true);
 
@@ -35,65 +45,134 @@ int main()
 	f.loadFromFile("Font\\arial.ttf");
 	t.setColor(Color::Red);
 	t.setFont(f);
-	t.setCharacterSize(16);
+	t.setCharacterSize(35);
 
 	EntityManager EM;
 
-	myPlayer = asset::createPlayer(EM, TM, { 130, 50 }, 10, { 32, 32 });
+	myPlayer = asset::createPlayer(EM, TM, { 0, 0 }, 10, { 32, 32 });
 
-	int crate = EM.createEntity();
-	EM.get(crate).activate();
-	EM.get(crate).add<comp::transform>();
-	EM.get(crate).add<comp::physic>();
-	EM.get(crate).add<comp::graphic>();
-	EM.get(crate).add<comp::collider>();
-	EM.get(crate).get<comp::transform>().position = { 130, 50 };
-	EM.get(crate).get<comp::physic>().mass = 10;
-	EM.get(crate).get<comp::graphic>().texture = &TM.get("crate");
-	EM.get(crate).get<comp::graphic>().texLocation = IntRect(0, 0, 32, 32);
-	EM.get(crate).get<comp::graphic>().init();
-	EM.get(crate).get<comp::collider>().setSize(16, 16);
-	EM.get(crate).get<comp::collider>().setPosition(EM.get(crate).get<comp::transform>().position);
-	/*
-	EM.get(player).get<comp::animation>().addAnimations();
-	EM.get(player).get<comp::animation>().addFrame(100);
-	EM.get(player).get<comp::animation>().addFrame(100);
-	EM.get(player).get<comp::animation>().addFrame(100);
-	EM.get(player).get<comp::animation>().addFrame(100);
-	EM.get(player).get<comp::animation>().addFrame(100);
-	EM.get(player).get<comp::animation>().addFrame(100);
-	EM.get(player).get<comp::animation>().loop(0);*/
+	asset::createPlatform(EM, TM, { 0, platformMid }, { 1500, platformSize.y });
+	death = EM.createEntity();
+	EM.get(death).activate();
+	EM.get(death).setTag("fire");
+	EM.get(death).add<comp::collider>();
+	EM.get(death).get<comp::collider>().setPosition(0, 300);
+	EM.get(death).get<comp::collider>().setSize(100, 40);
 
-	for (int k = 0; k < 5; k++)
-	{
-		asset::createPlatform(EM, TM, { 150 + k * 100.f, 150 + k * 100.f }, 10, { 500, 50 });
-		/*roccia = EM.createEntity();
-		cout << roccia << endl << myPlayer << endl;
-		EM.get(roccia).activate();
-		EM.get(roccia).add<comp::transform>();
-		EM.get(roccia).add<comp::physic>();
-		EM.get(roccia).add<comp::graphic>();
-		EM.get(roccia).add<comp::collider>();
-		EM.get(roccia).get<comp::transform>().position = { 150 + k * 100.f, 150 + k * 100.f };
-		EM.get(roccia).get<comp::physic>().mass = 10;
-		EM.get(roccia).get<comp::physic>().isKinematic = true;
-		EM.get(roccia).get<comp::graphic>().texture = &tm.get("stone");
-		EM.get(roccia).get<comp::graphic>().texLocation = IntRect(0, 0, 64, 32);
-		EM.get(roccia).get<comp::graphic>().init();
-		EM.get(roccia).get<comp::collider>().setSize(32, 16);
-		EM.get(roccia).get<comp::collider>().setPosition(EM.get(roccia).get<comp::transform>().position);*/
-	}
 
-	Camera camera(window, v, EM.get(myPlayer).get<comp::transform>().position);
+	Camera camera(window, v);
 	camera.init();
+
+	int playerBlock = 1;
+	int lastBuiltBlock = 1;
+
+	int newSet[] = { 0, 0, 0 };
+	int lastSet[] = { 0, 0, 1 };
+
+	bool lastFire = false;
 
 	while (window.isOpen())
 	{
 		elapsed = clock.restart();
 
-		if (elapsed.asSeconds() > 1 / 20.0f)
+		playerBlock = EM.get(myPlayer).get<comp::transform>().position.x / platformSize.x;
+
+
+		while (lastBuiltBlock < playerBlock + 35) // need new block
 		{
-			elapsed = seconds(1 / 20.0f);
+			newSet[0] = 0;
+			newSet[1] = 0;
+			newSet[2] = 0;
+
+			int randValue = rand() % 10;
+
+			if (lastFire)
+			{
+				randValue = lastSet[0] ? 3 : (lastSet[1] ? 6 : 9);
+			}
+
+			lastFire = false;
+
+			if (randValue < 2 && (lastSet[0] || lastSet[1] || lastSet[2]))
+			{
+				if (!(rand() % 3))
+				{
+					if (lastSet[0])
+					{
+						asset::createCoin(EM, TM, { 100.0f * (lastBuiltBlock + 1), platformTop - 150 });
+					}
+					else if (lastSet[1])
+					{
+						asset::createCoin(EM, TM, { 100.0f * (lastBuiltBlock + 1), platformMid - 150 });
+					}
+					else
+					{
+						asset::createCoin(EM, TM, { 100.0f * (lastBuiltBlock + 1), platformDown - 150 });
+					}
+
+				}
+
+			}
+			else if (randValue < 5 && (lastSet[0] || lastSet[1]))
+			{
+				asset::createPlatform(EM, TM, { platformSize.x * (lastBuiltBlock + 1), 0 }, platformSize);
+
+				if (!(rand() % 8) && lastSet[0])
+				{
+					lastFire = true;
+					asset::createFire(EM, TM, { platformSize.x * (lastBuiltBlock + 1), platformTop - 32 });
+				}
+				else if (!(rand() % 8))
+				{
+					asset::createCoin(EM, TM, { platformSize.x * (lastBuiltBlock + 1), platformTop - 50 });
+				}
+
+				newSet[0] = 1;
+			}
+			else if (randValue < 8)
+			{
+				asset::createPlatform(EM, TM, { platformSize.x * (lastBuiltBlock + 1), 100 }, platformSize);
+
+				if (!(rand() % 8) && lastSet[1])
+				{
+					lastFire = true;
+					asset::createFire(EM, TM, { platformSize.x * (lastBuiltBlock + 1), platformMid - 32 });
+				}
+				else if (!(rand() % 8))
+				{
+					asset::createCoin(EM, TM, { platformSize.x * (lastBuiltBlock + 1), platformMid - 50 });
+				}
+
+				newSet[1] = 1;
+			}
+			else
+			{
+				asset::createPlatform(EM, TM, { platformSize.x * (lastBuiltBlock + 1), 200 }, platformSize);
+
+				if (!(rand() % 8) && lastSet[2])
+				{
+					lastFire = true;
+					asset::createFire(EM, TM, { platformSize.x * (lastBuiltBlock + 1), platformDown - 32 });
+				}
+				else if (!(rand() % 8))
+				{
+					asset::createCoin(EM, TM, { platformSize.x * (lastBuiltBlock + 1), platformDown - 50 });
+				}
+
+				newSet[2] = 1;
+			}
+
+			lastSet[0] = newSet[0];
+			lastSet[1] = newSet[1];
+			lastSet[2] = newSet[2];
+			lastBuiltBlock++;
+		}
+
+		t.setString(to_string(EM.get(myPlayer).get<comp::player>().points + playerBlock));
+
+		if (elapsed.asSeconds() > 1 / 60.0f)
+		{
+			elapsed = seconds(1 / 60.0f);
 		}
 
 		sf::Event event;
@@ -106,20 +185,60 @@ int main()
 				if (Keyboard::isKeyPressed(Keyboard::Escape))
 					window.close();
 			}
-		}		
+		}
 
 		sys::handleInput(EM, myPlayer, camera.getPosition());
+		sys::cleanFarFromPlayer(EM, myPlayer);
+
+		sys::gravity(EM, elapsed.asMilliseconds());
 
 		sys::movement(EM, elapsed.asMilliseconds());
-		sys::gravity(EM, elapsed.asMilliseconds());
+
+		EM.get(death).get<comp::collider>().setPosition(EM.get(myPlayer).get<comp::transform>().position.x, 300);
+
 		sys::collision(EM);
 
-		camera.update();
+		if (!EM.get(myPlayer).get<comp::player>().isAlive)
+		{
+			EM.get(myPlayer).deactivate();
+			t.setString("You died\nScore: " + to_string(EM.get(myPlayer).get<comp::player>().points + playerBlock) +
+				"\nPress R to restart");
+			if (Keyboard::isKeyPressed(Keyboard::R))
+			{
+				sys::cleanAll(EM);
 
-		window.clear();
+				myPlayer = asset::createPlayer(EM, TM, { 0, 0 }, 10, { 32, 32 });
+
+				asset::createPlatform(EM, TM, { 0, platformMid }, { 1500, platformSize.y });
+				death = EM.createEntity();
+				EM.get(death).activate();
+				EM.get(death).setTag("fire");
+				EM.get(death).add<comp::collider>();
+				EM.get(death).get<comp::collider>().setPosition(0, 300);
+				EM.get(death).get<comp::collider>().setSize(100, 40);
+
+				playerBlock = 1;
+				lastBuiltBlock = 1;
+
+				newSet[0] = 0;
+				newSet[1] = 0;
+				newSet[2] = 0;
+
+				lastSet[0] = 0;
+				lastSet[1] = 0;
+				lastSet[2] = 1;
+			}
+		}
+
+		camera.update(Vector2f(EM.get(myPlayer).get<comp::transform>().position.x, 100));
+
+		t.setPosition(v.getCenter() - (v.getSize() / 2.0f));
+
+		window.clear(Color::Blue);
 
 		sys::display(EM, window);
 		camera.drawCursor();
+		window.draw(t);
 
 		window.display();
 	}

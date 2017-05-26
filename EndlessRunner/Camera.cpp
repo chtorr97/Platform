@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Camera::Camera(RenderWindow& _window, View& _view, Vector2f& _focus)
-	: window(_window), view(_view), focus(_focus)
+Camera::Camera(RenderWindow& _window, View& _view)
+	: window(_window), view(_view)
 {
 	init();
 }
@@ -12,7 +12,7 @@ void Camera::init()
 	cursor[0].position = sf::Vector2f(0, 0);
 	cursor[1].position = sf::Vector2f(SIZE.x, SIZE.y - SIZE.y * 0.4);
 	cursor[2].position = sf::Vector2f(SIZE.x - SIZE.x * 0.4, SIZE.y);
-	cursorPos = view.getCenter();
+	cursorPos = view.getCenter() - Vector2f(100.0f, 100.0f);
 	cursor[0].color = color;
 	cursor[1].color = Color::Yellow;
 	cursor[2].color = Color::Yellow;
@@ -22,7 +22,7 @@ void Camera::init()
 	lvlSize = Vector2f(-1, -1);
 }
 
-void Camera::update()
+void Camera::update(Vector2f& focus)
 {
 	view.setCenter(focus); //setView & update window
 	if (lvlSize.x != -1 && //check X level limit
